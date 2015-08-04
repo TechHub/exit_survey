@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Members exit survey">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Goodbye</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/pure-min.css" media="screen" title="no title" charset="utf-8">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/grids-responsive-min.css">
+
+  <style>
+    body {
+      background: #FFCA28;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .wrapper {
+      background-color: #fff;
+      padding: 25px;
+      margin: 25px auto;
+      max-width: 600px;
+    }
+
+    .pure-form input[type="radio"] {
+      margin-right: 10px;
+    }
+
+    .lead {
+      margin: 20px 0;
+      font-size: 1em;
+      line-height: 1.4em;
+    }
+
+    .form {
+      margin: 25px 0;
+    }
+
+    .pure-button-primary {
+      background-color: #3F51B5;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="pure-g" id="main-form">
+    <div class="wrapper">
+      <div class="pure-u-1 text-center">
+        <img src="https://cdn.techhub.com/images/website/techhub_3d_logo_png.png" alt="" width="150">
+        <h1>We will be sad to see you go! </h1>
+        <p class="lead">It's been a pleasure having you as part of the community and we wish you all of the best of luck with the future.
+          <br>
+          <br>Before you go could you please tell us why you're leaving? </p>
+      </div>
+      <div class="pure-u-1">
+        <form class="pure-form form">
+          <label for="o1" class="pure-radio">
+            <input id="o1" type="radio" name="exitRadios" value="noResponse">Not working on the same product anymore
+          </label>
+          <label for="o2" class="pure-radio">
+            <input id="o2" type="radio" name="exitRadios" value="notWorkingAnymore">Moved to a different location/country
+          </label>
+          <label for="o3" class="pure-radio">
+            <input id="o3" type="radio" name="exitRadios" value="noMoreMembership">Don't need/want the membership anymore
+          </label>
+          <label for="o4" class="pure-radio">
+            <input id="o4" type="radio" name="exitRadios" value="expensive">It's too expensive
+          </label>
+          <label for="o5" class="pure-radio">
+            <input id="o5" type="radio" name="exitRadios" value="other">Other
+          </label>
+          <fieldset id="textarea-field" class="pure-group hidden">
+            <textarea id="textarea-other" class="pure-input-1" rows="4"></textarea>
+          </fieldset>
+        </form>
+        <button id="send" class="pure-button pure-button-primary">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pure-g hidden" id="thanks">
+    <div class="pure-u-1 text-center">
+      <h1>Thanks and goodbye!</h1>
+      <img src="images/img1.jpg" alt="Bye">
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script>
+    (function($) {
+
+      function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+          results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+      }
+
+      var data = {};
+      data.memberId = getParameterByName('id');
+
+      $('input[name=exitRadios]').change(function() {
+        if ($('input[name=exitRadios]:checked').val() === 'other') {
+          $('#textarea-field').removeClass('hidden');
+          data.choice = 'other';
+        } else {
+          $('#textarea-field').addClass('hidden');
+        }
+        data.choice = $('input[name=exitRadios]:checked').val();
+      });
+
+      $('#send').click(function(e) {
+        e.preventDefault();
+
+        var btn = $(this);
+
+        btn.attr('disabled', true);
+
+        if ($('input[name=exitRadios]:checked').val() === 'other') {
+          $('#textarea-field').removeClass('hidden');
+          data.other = $('#textarea-other').val();
+        }
+
+        $.ajax({
+          url: 'https://www.techhub.com/api/v1/exit_survey',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(data)
+        }).then(function(data) {
+          $('#main-form').addClass('hidden');
+          $('#thanks').removeClass('hidden');
+        }).fail(function(data) {
+          btn.attr('disabled', false);
+          window.alert('There was an error submitting the form :(', data);
+        });
+      });
+    }(jQuery));
+  </script>
+</body>
+
+</html>
