@@ -5,3 +5,4 @@ dist
 bower_components
 test/bower_components
 awsConfig.json
+.awspublish-goodbye.techhub.com
