@@ -49,35 +49,52 @@
 <body>
   <div class="pure-g" id="main-form">
     <div class="wrapper">
-      <div class="pure-u-1 text-center">
-        <img src="https://cdn.techhub.com/images/website/techhub_3d_logo_png.png" alt="" width="150">
-        <h1>We will be sad to see you go! </h1>
-        <p class="lead">It's been a pleasure having you as part of the community and we wish you all of the best of luck with the future.
-          <br>
-          <br>Before you go could you please tell us why you're leaving? </p>
+      <div id="noid" class="pure-u-1 hidden">
+        Your URL is invalid, please make sure you are opening the correct URL you received in the email.
       </div>
-      <div class="pure-u-1">
-        <form class="pure-form form">
-          <label for="o1" class="pure-radio">
-            <input id="o1" type="radio" name="exitRadios" value="notWorkingAnymore">Not working on the same product anymore
-          </label>
-          <label for="o2" class="pure-radio">
-            <input id="o2" type="radio" name="exitRadios" value="moved">Moved to a different location/country
-          </label>
-          <label for="o3" class="pure-radio">
-            <input id="o3" type="radio" name="exitRadios" value="noMoreMembership">Don't need/want the membership anymore
-          </label>
-          <label for="o4" class="pure-radio">
-            <input id="o4" type="radio" name="exitRadios" value="expensive">It's too expensive
-          </label>
-          <label for="o5" class="pure-radio">
-            <input id="o5" type="radio" name="exitRadios" value="other">Other
-          </label>
-          <fieldset id="textarea-field" class="pure-group hidden">
-            <textarea id="textarea-other" class="pure-input-1" rows="4"></textarea>
-          </fieldset>
-        </form>
-        <button id="send" class="pure-button pure-button-primary">Send</button>
+      <div id="form" class="hidden">
+        <div class="pure-u-1 text-center">
+          <img src="https://cdn.techhub.com/images/website/techhub_3d_logo_png.png" alt="" width="150">
+          <h1>We will be sad to see you go! </h1>
+          <p class="lead">It's been a pleasure having you as part of the community and we wish you all of the best of luck with the future.
+            <br>
+            <br>Before you go could you please tell us why you're leaving? </p>
+        </div>
+        <div class="pure-u-1">
+          <form class="pure-form form">
+            <label for="o1" class="pure-radio">
+              <input id="o1" type="radio" name="exitRadios" value="ideaDidntWork">I was looking to validate a startup idea which didn't quite work as planned
+            </label>
+            <label for="o2" class="pure-radio">
+              <input id="o2" type="radio" name="exitRadios" value="noTraction">To be honest, I didn't quite get the traction I was expecting
+            </label>
+            <label for="o3" class="pure-radio">
+              <input id="o3" type="radio" name="exitRadios" value="runningLowOnCash">The investment cycle is much longer than I thought and I am running low on cash
+            </label>
+            <label for="o4" class="pure-radio">
+              <input id="o4" type="radio" name="exitRadios" value="outgrownSpace">We've out-grown the space and are moving to our own office
+            </label>
+            <label for="o5" class="pure-radio">
+              <input id="o5" type="radio" name="exitRadios" value="didntLikeTechHub">I didn't quite get the TechHub atmosphere
+            </label>
+            <label for="o6" class="pure-radio">
+              <input id="o6" type="radio" name="exitRadios" value="cuttingCosts">I'm hoping to sustain my business for longer by cutting my costs
+            </label>
+            <label for="o7" class="pure-radio">
+              <input id="o7" type="radio" name="exitRadios" value="teamIssue">I've had team issues
+            </label>
+            <label for="o8" class="pure-radio">
+              <input id="o8" type="radio" name="exitRadios" value="noEngageWithCommunity">I didn't really engage in the community or take advantage of my membership
+            </label>
+            <label for="o9" class="pure-radio">
+              <input id="o9" type="radio" name="exitRadios" value="other">Other
+            </label>
+            <fieldset id="textarea-field" class="pure-group hidden">
+              <textarea id="textarea-other" class="pure-input-1" rows="4"></textarea>
+            </fieldset>
+          </form>
+          <button id="send" class="pure-button pure-button-primary">Send</button>
+        </div>
       </div>
     </div>
   </div>
@@ -100,44 +117,49 @@
         return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
       }
 
-      var data = {};
-      data.memberId = getParameterByName('id');
+      if (getParameterByName('id')) {
+        $('#form').removeClass('hidden');
+        var data = {};
+        data.memberId = getParameterByName('id');
 
-      $('input[name=exitRadios]').change(function() {
-        if ($('input[name=exitRadios]:checked').val() === 'other') {
-          $('#textarea-field').removeClass('hidden');
-          data.choice = 'other';
-        } else {
-          $('#textarea-field').addClass('hidden');
-        }
-        data.choice = $('input[name=exitRadios]:checked').val();
-      });
-
-      $('#send').click(function(e) {
-        e.preventDefault();
-
-        var btn = $(this);
-
-        btn.attr('disabled', true);
-
-        if ($('input[name=exitRadios]:checked').val() === 'other') {
-          $('#textarea-field').removeClass('hidden');
-          data.other = $('#textarea-other').val();
-        }
-
-        $.ajax({
-          url: 'https://www.techhub.com/api/v1/exit_survey',
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify(data)
-        }).then(function(data) {
-          $('#main-form').addClass('hidden');
-          $('#thanks').removeClass('hidden');
-        }).fail(function(data) {
-          btn.attr('disabled', false);
-          window.alert('There was an error submitting the form :(', data);
+        $('input[name=exitRadios]').change(function() {
+          if ($('input[name=exitRadios]:checked').val() === 'other') {
+            $('#textarea-field').removeClass('hidden');
+            data.choice = 'other';
+          } else {
+            $('#textarea-field').addClass('hidden');
+          }
+          data.choice = $('input[name=exitRadios]:checked').val();
         });
-      });
+
+        $('#send').click(function(e) {
+          e.preventDefault();
+
+          var btn = $(this);
+
+          btn.attr('disabled', true);
+
+          if ($('input[name=exitRadios]:checked').val() === 'other') {
+            $('#textarea-field').removeClass('hidden');
+            data.other = $('#textarea-other').val();
+          }
+
+          $.ajax({
+            url: 'https://www.techhub.com/api/v1/exit_survey',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data)
+          }).then(function(data) {
+            $('#main-form').addClass('hidden');
+            $('#thanks').removeClass('hidden');
+          }).fail(function(data) {
+            btn.attr('disabled', false);
+            window.alert('There was an error submitting the form :(', data);
+          });
+        });
+      } else {
+        $('#noid').removeClass('hidden');
+      }
     }(jQuery));
   </script>
 </body>
